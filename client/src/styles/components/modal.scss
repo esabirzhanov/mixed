@@ -1,0 +1,79 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5)
+}
+
+.modal-body {
+  position: fixed;
+  top: 5.0em;
+  bottom: 70.0em;
+  right: 2%;
+  left: 2%;
+  padding: 2em 3em;
+  background-color: white;
+  overflow: auto;
+   min-height: 10.0em
+
+}
+
+@media (min-width: 35em) {
+  .modal-body {
+    right: 10%;
+    left: 10%;
+    top: 20.0em;
+    bottom: 40.0em;
+  }
+}
+
+@media (min-width: 50em) {
+  .modal-body {
+    right: 30%;
+    left: 30%;
+    top: 10.0em;
+    bottom: 20.0em;
+  }
+}
+
+
+
+
+.modal-button-cross {
+  position: absolute;
+  top: 0.3em;
+  right: 0.3em;
+  padding: 0.3em;
+  cursor: pointer;
+  font-size: 2em;
+  height: 1em;
+  width: 1em;
+  text-indent: 10em;
+  overflow: hidden;
+  border: 0;
+}
+.modal-button-cross::after {
+  position: absolute;
+  line-height: 0.5;
+  top: 0.2em;
+  left: 0.1em;
+  text-indent: 0;
+  content: "\00D7";
+}
+
+.display-block {
+  display: block;
+}
+
+.display-none {
+  display: none;
+}
+
+.control-buttons-container {
+  position: absolute;
+  bottom: 1.0em;
+  right: 0.3em;
+  /* background-color: #5f4b44; */
+}

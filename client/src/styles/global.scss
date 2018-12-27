@@ -1,0 +1,54 @@
+// Globals ============================
+:root {
+  box-sizing: border-box;
+  font-size: calc(1vw + 0.6em);
+}
+
+@media (min-width: 50em) {
+  :root {
+    font-size: 1.125em;
+  }
+}
+
+button {
+  font-size: 1.125em;
+}
+
+*,
+::before,
+::after {
+  box-sizing: inherit;
+}
+
+body {
+  background-color: #e9ebee;
+  font-family: 'Open Sans', sans-serif;
+}
+
+body * + * {
+  margin-top: 1.5em;
+}
+
+a:link {
+  text-decoration: none;
+}
+
+a:visited {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:active {
+  text-decoration: underline;
+}
+
+.app {
+    .loading {
+        position: absolute;
+        top: 50vh;
+        left: 50vw;
+    }
+}

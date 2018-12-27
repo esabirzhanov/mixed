@@ -1,0 +1,64 @@
+.groups {
+  padding: 1.5em;
+  background-color: #fff;
+  border-radius: .5em;
+  border-style: solid;
+  border-width: 1px;
+  border-color: blue;
+}
+
+.group {
+    background-color: #fff;
+    margin: 0 1.5em 1.5em 0;
+    width: calc(100% - 1.5em);
+    padding: 1.5em;
+    border-bottom: 1px solid blue;
+}
+
+.media {
+  overflow:auto;
+  clear: both;
+}
+
+.media-image {
+  float: left;
+  margin-right: 1.5em;
+  max-width: 100%;
+}
+
+@media (min-width: 35em) {
+  .media-image {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 50em) {
+  .media-image {
+    max-width: 33em;
+  }
+}
+
+.media-body {
+  margin-left: -1.5em;
+  padding: 1.5em;
+  min-height: 15.0em
+}
+
+.group-buttons {
+  /* background-color: #5f4b44; */
+  overflow:auto;
+  clear: both;
+}
+
+.control-buttons {
+  margin-top: 0;
+  float: right;
+}
+
+.posts-button {
+  float: left;
+  margin: 0.5em 1.5em 0.5em 0.0em;
+  padding: .5em 2em;
+  background-color: #cc6b5a;
+  color: white;
+}
