@@ -7,6 +7,7 @@ import Welcome from '../welcome/Welcome';
 import Group from '../group/Group';
 import Modal from "../modal/Modal";
 
+import '../../styles/components/app.scss';
 import '../../styles/components/menu.scss';
 
 
@@ -116,31 +117,35 @@ class App extends Component {
     return (
       <div className="app">
         <div className="header">
-          <nav className={classNames('menu', {isOpen: this.state.showHideClassName})} id="main-menu">
+              <nav className={classNames('menu', {isOpen: this.state.showHideClassName})} id="main-menu">
 
-            <button className="menu-toggle" id="toggle-menu" onClick={this.toggleMenu}>
-              toggle menu
-            </button>
-            <div className='menu-dropdown'>
-              <ul className="site-nav">
-                <li><a href="/">Home</a></li>
-                <li><a href="/bands">Bands</a></li>
-                <li><a href="/flows">Flows</a></li>
-                <li><a href="/top_reports">Top Reports</a></li>
-                <li className="nav-right">
-                  <a href="/about">About</a>
-                  </li>
-              </ul>
-          </div>
-        </nav>
-          <Welcome key="welcome" />
-        </div>
+              <button className="menu-toggle" id="toggle-menu" onClick={this.toggleMenu}>
+                toggle menu
+              </button>
+              <div className='menu-dropdown'>
+                <ul className="site-nav">
+                  <li><a href="/">Home</a></li>
+                  <li><a href="/bands">Bands</a></li>
+                  <li><a href="/flows">Flows</a></li>
+                  <li><a href="/top_reports">Top Reports</a></li>
+                  <li>
+                    <a href="/about">About</a>
+                    </li>
+                </ul>
+            </div>
+
+          </nav>
+
+
+
+      </div>
 
 
 
         <div className="groups clearfix">
-          <h2>{titleMessage}</h2>
 
+          <div className="title"></div>
+            <h2>{titleMessage}</h2>
           <div>
             {this.state.groups.map(({ id, name, category, picture, description }) => {
               return <Group id={id} key={id} name={name}
@@ -150,8 +155,8 @@ class App extends Component {
           </div>
         </div>
 
-        <div id="deleteConfirm">
-          <Modal show={this.state.deleteConfirmDialog}>
+        <div id="deleteConfirm" className="centered">
+          <Modal show={this.state.deleteConfirmDialog} >
             <button className="modal-button-cross" onClick={this.hideDeleteGroupModal}></button>
             <div className="modal-content">
               {deleteWarning}
@@ -163,6 +168,8 @@ class App extends Component {
                 <button className="control-button" onClick={this.deleteGroup}>Delete</button>
               </div>
             </div>
+
+
           </Modal>
         </div>
 

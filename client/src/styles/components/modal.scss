@@ -1,3 +1,8 @@
+.centered {
+  text-align: center;
+}
+
+
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -16,7 +21,7 @@
   padding: 2em 3em;
   background-color: white;
   overflow: auto;
-   min-height: 10.0em
+  min-height: 12.0em
 
 }
 
@@ -38,29 +43,34 @@
   }
 }
 
-
-
-
 .modal-button-cross {
-  position: absolute;
-  top: 0.3em;
-  right: 0.3em;
-  padding: 0.3em;
-  cursor: pointer;
-  font-size: 2em;
-  height: 1em;
-  width: 1em;
-  text-indent: 10em;
-  overflow: hidden;
-  border: 0;
+  display: none;
 }
-.modal-button-cross::after {
-  position: absolute;
-  line-height: 0.5;
-  top: 0.2em;
-  left: 0.1em;
-  text-indent: 0;
-  content: "\00D7";
+
+
+@media (min-width: 50em) {
+  .modal-button-cross {
+    position: absolute;
+    top: 0.3em;
+    right: 0.3em;
+    padding: 0.3em;
+    cursor: pointer;
+    font-size: 2em;
+    height: 1em;
+    width: 1em;
+    text-indent: 10em;
+    overflow: hidden;
+    border: 0;
+  }
+
+  .modal-button-cross::after {
+    position: absolute;
+    line-height: 0.5;
+    top: 0.2em;
+    left: 0.1em;
+    text-indent: 0;
+    content: "\00D7";
+  }
 }
 
 .display-block {
@@ -72,8 +82,26 @@
 }
 
 .control-buttons-container {
-  position: absolute;
-  bottom: 1.0em;
-  right: 0.3em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   /* background-color: #5f4b44; */
+}
+
+
+@media (min-width: 35em) {
+  .control-buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media (min-width: 50em) {
+  .control-buttons-container {
+    position: absolute;
+    bottom: 1.0em;
+    right: 0.3em;
+  }
 }
