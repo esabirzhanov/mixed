@@ -42,7 +42,7 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F])(implicit F:
 
   def routes: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root / "hello" =>
-      Ok("Hello world.")
+      Ok("Hello world version 1.")
 
     case GET -> Root / "info" => {
       val toClient: Stream[F, WebSocketFrame] =

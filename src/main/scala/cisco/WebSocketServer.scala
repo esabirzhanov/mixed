@@ -1,7 +1,5 @@
 package cisco
 
-import java.net.{InetAddress, InetSocketAddress}
-
 import cats.effect._
 import cats.implicits._
 import cisco.model.{Artist, ArtistGroup}
@@ -18,7 +16,7 @@ object WebSocketServer extends IOApp {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val tempGroups = List(
+  val bands = List(
     ArtistGroup("1", "Pink Floyd", "Psychedelic", true,
       List(
         Artist("David","Gilmour"),
@@ -255,7 +253,7 @@ object WebSocketServer extends IOApp {
   )
 
   override def run(args: List[String]): IO[ExitCode] =
-    new Initializer[IO].config(tempGroups).compile.drain.as(ExitCode.Success)
+    new Initializer[IO].config(bands).compile.drain.as(ExitCode.Success)
 
 }
 
