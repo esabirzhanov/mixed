@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import classNames from 'classnames';
 
 import '../../styles/components/menu.scss';
+import Groups from '../group/Groups';
+import Welcome from '../welcome/Welcome';
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 
 class Menu extends Component {
@@ -33,22 +36,23 @@ class Menu extends Component {
   render() {
 
     return (
-      <div className="header">
-        <nav className={classNames('menu', {isOpen: this.state.showHideClassName})} id="main-menu">
-          <button className="menu-toggle" id="toggle-menu" onClick={this.toggleMenu}>
-            toggle menu
-          </button>
-          <div className='menu-dropdown'>
-            <ul className="site-nav">
-              <li><a href="/">Home</a></li>
-              <li><a href="/bands">Bands</a></li>
-              <li><a href="/flows">Flows</a></li>
-              <li><a href="/top_reports">Top Reports</a></li>
-              <li><a href="/about">About</a></li>
+      <Router>
+        <div className="header">
+          <nav className={classNames('menu', {isOpen: this.state.showHideClassName})} id="main-menu">
+            <button className="menu-toggle" id="toggle-menu" onClick={this.toggleMenu}>
+              toggle menu
+            </button>
+            <div className='menu-dropdown'>
+              <ul className="site-nav">
+                <li><Link to="/">Home</Link></li>
+                <li><Link to="/bands">Bands</Link></li>
               </ul>
-          </div>
-        </nav>
-      </div>
+            </div>
+          </nav>
+          <Route exact path="/" component={Welcome} />
+          <Route path="/bands" component={Groups} />
+        </div>
+      </Router>
     );
   }
 }

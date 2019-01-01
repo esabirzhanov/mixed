@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Menu from '../menu/Menu';
-import Groups from '../group/Groups';
+import Welcome from '../welcome/Welcome';
 
 import '../../styles/components/app.scss';
 import '../../styles/components/menu.scss';
@@ -29,8 +29,6 @@ class App extends Component {
     return (
       <div className="app">
         <Menu></Menu>
-        <Groups></Groups>
-
       </div>
     );
   }
