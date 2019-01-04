@@ -2,6 +2,7 @@ val Http4sVersion = "0.19.0-M3"
 val Specs2Version = "4.2.0"
 val LogbackVersion = "1.2.3"
 val CirceVersion = "0.10.0"
+lazy val doobieVersion = "0.6.0"
 
 lazy val root = (project in file("."))
   .settings(
@@ -20,6 +21,9 @@ lazy val root = (project in file("."))
       "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
        "co.fs2" %% "fs2-io" % "1.0.0",
        "co.fs2" %% "fs2-core" % "1.0.0",
+      "org.tpolecat" %% "doobie-specs2"   % doobieVersion,
+      "org.tpolecat" %% "doobie-core"      % doobieVersion,
+      "org.tpolecat" %% "doobie-postgres"  % doobieVersion,
       "javax.xml.bind" % "jaxb-api" % "2.3.0"
     )
   )

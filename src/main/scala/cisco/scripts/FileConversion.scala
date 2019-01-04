@@ -13,25 +13,25 @@ object FileConversion extends IOApp {
     Resource.make(IO(ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2))))(ec => IO(ec.shutdown()))
 
   def converter(fileName: String): Stream[IO, Unit] = Stream.resource(blockingExecutionContext).flatMap { blockingEC =>
-    def toDatabase(f: String): String =  {
-
-
-    //  val pairs: Array[String] = f.split("|")
-    //  val flowId = pairs(0).splitAt('=')(1)
-   //   val startActive = pairs(1).splitAt('=')(1)
-
-
-
-
-
-      f
+    def convert(data: String): String =  {
+      val pairs: Array[String] = data.split('|')
+      val flowId = pairs(0).split('=')(1)
+      val startActive = pairs(1).split('=')(1)
+      val lastActive = pairs(2).split('=')(1)
+      val servicePort = pairs(3).split('=')(1)
+      val protocol = pairs(4).split('=')(1)
+      val output = String.format("%s\t%s\t%s\t%s\t%s",
+        flowId,
+        startActive, lastActive,
+        servicePort, protocol)
+      output
     }
 
     io.file.readAll[IO](Paths.get(s"input-data/${fileName}"), blockingEC, 4096)
       .through(text.utf8Decode)
       .through(text.lines)
       .filter(s => !s.trim.isEmpty && !s.startsWith("//"))
-      .map(line => toDatabase(line))
+      .map(line => convert(line))
       .intersperse("\n")
       .through(text.utf8Encode)
       .through(io.file.writeAll(Paths.get(s"output-data/${fileName}"), blockingEC))
