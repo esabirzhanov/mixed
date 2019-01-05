@@ -1,4 +1,4 @@
-package cisco.validators
+package enterprise.validators
 
 trait ErrorValidation {
   def errorMessage: String

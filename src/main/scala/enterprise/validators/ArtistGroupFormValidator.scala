@@ -1,8 +1,8 @@
-package cisco.validators
+package enterprise.validators
 
 import cats.data.ValidatedNel
 import cats.implicits._
-import cisco.model.{Artist, ArtistGroup}
+import enterprise.model.{Artist, ArtistGroup}
 import io.circe.{Encoder, Json}
 
 trait ArtistGroupFormValidator {

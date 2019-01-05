@@ -1,4 +1,4 @@
-package cisco
+package enterprise
 
 
 import java.nio.ByteBuffer
@@ -9,10 +9,10 @@ import cats.effect._
 import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
-import cisco.model.ArtistGroup
-import cisco.repositories.ArtistGroupRepository
-import cisco.validators.ErrorValidation
-import cisco.validators.ArtistGroupFormValidator._
+import enterprise.model.ArtistGroup
+import enterprise.repositories.ArtistGroupRepository
+import enterprise.validators.ErrorValidation
+import enterprise.validators.ArtistGroupFormValidator._
 import fs2.text.utf8Decode
 import fs2.concurrent.Queue
 import fs2._

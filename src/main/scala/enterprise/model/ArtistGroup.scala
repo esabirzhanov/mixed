@@ -1,4 +1,4 @@
-package cisco.model
+package enterprise.model
 
 case class ArtistGroup(id: String,
                        name: String,

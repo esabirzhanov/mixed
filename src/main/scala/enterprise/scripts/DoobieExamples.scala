@@ -1,4 +1,4 @@
-package cisco.scripts
+package enterprise.scripts
 
 import cats.effect.{ExitCode, IO, IOApp}
 import doobie.free.connection.ConnectionIO

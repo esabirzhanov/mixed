@@ -6,7 +6,7 @@ lazy val doobieVersion = "0.6.0"
 
 lazy val root = (project in file("."))
   .settings(
-    organization := "cisco",
+    organization := "enterprise",
     name := "mixed",
     version := "0.0.1-SNAPSHOT",
     scalaVersion := "2.12.6",

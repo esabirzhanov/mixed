@@ -1,4 +1,4 @@
-package cisco.scripts
+package enterprise.scripts
 
 import cats.effect.{ExitCode, IO, IOApp, Resource}
 import cats.implicits._
@@ -12,7 +12,7 @@ object FileConversion extends IOApp {
   private val blockingExecutionContext =
     Resource.make(IO(ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2))))(ec => IO(ec.shutdown()))
 
-  def converter(fileName: String): Stream[IO, Unit] = Stream.resource(blockingExecutionContext).flatMap { blockingEC =>
+  def converter(fileName: String)= Stream.resource(blockingExecutionContext).flatMap { blockingEC =>
     def convert(data: String): String =  {
       val pairs: Array[String] = data.split('|')
       val flowId = pairs(0).split('=')(1)

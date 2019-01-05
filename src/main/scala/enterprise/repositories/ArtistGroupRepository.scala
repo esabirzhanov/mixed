@@ -1,11 +1,11 @@
-package cisco.repositories
+package enterprise.repositories
 
 import java.util.UUID
 
 import cats.data.OptionT
 import cats.effect.Effect
 import cats.implicits._
-import cisco.model.ArtistGroup
+import enterprise.model.ArtistGroup
 
 import scala.collection.mutable.ListBuffer
 

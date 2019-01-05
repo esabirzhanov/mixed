@@ -1,9 +1,9 @@
-package cisco
+package enterprise
 
 import cats.effect._
 import cats.implicits._
-import cisco.model.{Artist, ArtistGroup}
-import cisco.repositories.ArtistGroupRepository
+import enterprise.model.{Artist, ArtistGroup}
+import enterprise.repositories.ArtistGroupRepository
 import fs2._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.blaze.BlazeServerBuilder
