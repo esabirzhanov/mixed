@@ -4,6 +4,6 @@ target
 project/target
 project/project
 dist
-input-data/
-output-data/
+input-data
+output-data
 
