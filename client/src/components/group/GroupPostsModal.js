@@ -1,8 +1,8 @@
 import React from 'react';
 import '../../styles/components/modal.scss';
-import '../../styles/components/controlButtons.scss';
 
-const Modal = ({ show, children }) => {
+
+const GroupPostsModal = ({ show, children }) => {
     const showHideClassName = show ? "modal display-block" : "modal display-none";
     return (
         <div className={showHideClassName}>
@@ -14,4 +14,4 @@ const Modal = ({ show, children }) => {
     );
 };
 
-export default Modal;
+export default GroupPostsModal;

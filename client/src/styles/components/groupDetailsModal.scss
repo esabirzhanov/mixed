@@ -1,0 +1,133 @@
+.centered {
+  text-align: center;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5)
+}
+
+.modal-body {
+  position: fixed;
+  top: 5.0em;
+
+  right: 2%;
+  left: 2%;
+  padding: 2em 3em;
+  background-color: white;
+  overflow: auto;
+  min-height: 40.0em
+}
+
+@media (min-width: 35em) {
+  .modal-body {
+    right: 10%;
+    left: 10%;
+    top: 20.0em;
+    bottom: 40.0em;
+  }
+}
+
+@media (min-width: 50em) {
+  .modal-body {
+    position: fixed;
+    top: 3em;
+    bottom: 3em;
+    right: 20%;
+    left: 20%;
+    padding: 2em 3em;
+    background-color: white;
+    overflow: auto;
+  }
+}
+
+
+
+@media (min-width: 50em) {
+  .modal-button-cross {
+    position: absolute;
+    top: 0.3em;
+    right: 0.3em;
+    padding: 0.3em;
+    cursor: pointer;
+    font-size: 2em;
+    height: 1em;
+    width: 1em;
+    text-indent: 10em;
+    overflow: hidden;
+    border: 0;
+  }
+
+  .modal-button-cross::after {
+    position: absolute;
+    line-height: 0.5;
+    top: 0.2em;
+    left: 0.1em;
+    text-indent: 0;
+    content: "\00D7";
+  }
+}
+
+.display-block {
+  display: block;
+}
+
+.display-none {
+  display: none;
+}
+
+.control-buttons-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* background-color: #5f4b44; */
+}
+
+
+@media (min-width: 35em) {
+  .control-buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media (min-width: 50em) {
+  .control-buttons-container {
+    position: absolute;
+    bottom: 1.0em;
+    right: 0.3em;
+  }
+}
+
+
+.group-details-form h3 {
+      margin: 0;
+      font-size: .9em;
+      font-weight: bold;
+      text-align: right;
+      text-transform: uppercase;
+    }
+    .group-details-form input:not([type=checkbox]):not([type=radio])  {
+      display: block;
+      margin-top: 0;
+      width: 100%;
+    }
+
+    .group-details-form textarea  {
+      display: block;
+      margin-top: 0;
+      width: 100%;
+    }
+    .group-details-form button {
+      margin-top: 1em;
+      border: 1px solid #cc6b5a;
+      background-color: white;
+      padding: .5em 1em;
+      cursor: pointer;
+    }

@@ -6,16 +6,30 @@ import '../../styles/components/group.scss';
 class Group extends Component {
 
   constructor(props) {
-       super(props);
-       this.remove = this.remove.bind(this);
-   }
+    super(props);
+    this.remove = this.remove.bind(this);
+    this.openDetails = this.openDetails.bind(this);
+    this.openPosts = this.openPosts.bind(this);
+  }
 
   remove(e) {
-        const id = this.props.id;
-        const name = this.props.name
-        e.preventDefault();
-        this.props.handleDelete(id, name)
-    }
+    e.preventDefault();
+    const id = this.props.id;
+    const name = this.props.name
+    this.props.handleDelete(id, name)
+  }
+
+  openDetails(e) {
+    const id = this.props.id;
+    e.preventDefault();
+    this.props.handleDetails(id)
+  }
+
+  openPosts(e) {
+    const id = this.props.id;
+    e.preventDefault();
+    this.props.handlePosts(id)
+  }
 
   render() {
     const picturePath = require(`../../static/images/${this.props.picture}`);
@@ -33,17 +47,16 @@ class Group extends Component {
 
         <div className="group-buttons">
           <div>
-              <button className="posts-button">Posts</button>
+              <button className="posts-button" onClick={this.openPosts}>Posts</button>
           </div>
 
           <div className="control-buttons">
-            <button className="control-button" >Details</button>
+            <button className="control-button" onClick={this.openDetails} >Details</button>
             <button className="control-button" onClick={this.remove}>Delete</button>
           </div>
         </div>
 
       </div>
-
     );
  }
 }

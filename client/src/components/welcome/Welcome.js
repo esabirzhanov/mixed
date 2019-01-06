@@ -5,7 +5,7 @@ const Welcome = () => {
     return (
         <div>
             <div className="welcome">
-                <h1>Welcome to React Powered Outstanding Bands App!</h1>
+                <h1>Welcome to React Powered Mixed Stupid App!</h1>
                   <ul>
                       <li>Building a stupid mixed app</li>
                       <li>Learning about the fundamentals of React</li>
@@ -14,7 +14,6 @@ const Welcome = () => {
                       <li>Testing React applications</li>
                       <li>Implementing a Redux application architecture</li>
                   </ul>
-
               </div>
         </div>
     );
