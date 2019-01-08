@@ -158,7 +158,7 @@ render() {
       </div>
 
       <div id="groupDetails">
-        <GroupDetailsModal show={this.state.groupDetailsDialog}>
+        <GroupDetailsModal show={this.state.groupDetailsDialog} groupId={this.state.groupId}>
           <button className="modal-button-cross" onClick={this.hideGroupDetailsModal}></button>
           <div className="modal-content">
               <form className="group-details-form">
