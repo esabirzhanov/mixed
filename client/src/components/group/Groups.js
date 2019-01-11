@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import api from "../../shared/http";
 import Group from './Group';
-import Modal from "../modal/Modal";
 import GroupDetailsModal from "./GroupDetailsModal";
+import GroupDeleteModal from "./GroupDeleteModal";
 import GroupPostsModal from "./GroupPostsModal";
 
 class Groups extends Component {
@@ -14,12 +14,10 @@ class Groups extends Component {
           error: null,
           loading: false,
           groups: [],
-          group: null,
           deleteConfirmDialog: false,
           groupDetailsDialog: false,
           groupPostsDialog: false,
-          groupId: -1,
-          groupName: null
+          groupId: -1
         };
       this.getGroups = this.getGroups.bind(this);
       this.deleteGroup = this.deleteGroup.bind(this);
@@ -59,67 +57,62 @@ class Groups extends Component {
   }
 
   openGroupDetailsModal = (groupId) => {
-    api.getGroup(groupId, data => {
-      this.setState({
-        groupId: groupId,
-        group: data,
-        groupDetailsDialog: true
-      });
+    this.setState({
+      groupId: groupId,
+      groupDetailsDialog: true
     });
   }
 
   hideGroupDetailsModal = () => {
-      this.setState({
-        groupId: -1,
-        group: null,
-        groupDetailsDialog: false
-      });
+    this.setState({
+      groupId: -1,
+      groupDetailsDialog: false
+    });
   }
 
   openDeleteGroupModal = (groupId, groupName) => {
     this.setState({
-        groupId: groupId,
-        groupName: groupName,
-        deleteConfirmDialog: true
-      });
+      groupId: groupId,
+      deleteConfirmDialog: true
+    });
   }
 
   hideDeleteGroupModal = () => {
-      this.setState({
-        groupId: -1,
-        groupName: null,
-        deleteConfirmDialog: false
-      });
+    this.setState({
+      groupId: -1,
+      deleteConfirmDialog: false
+    });
   }
 
-deleteGroup = groupId => {
-  api.remove(this.state.groupId, () => {
+  deleteGroup = groupId => {
+    api.remove(this.state.groupId, () => {
+      console.log("fhgfhf");
+      api.getGroups(data => {
+        this.setState({
+          groups: data
+        });
+      })
+    })
+    .catch(err => {
+      this.setState(() => ({ error: err }));
+    });
+    this.hideDeleteGroupModal();
+  }
+
+  getGroups =  () => {
     api.getGroups(data => {
       this.setState({
-        groups: data
+        groups: this.state.groups.concat(data)
       });
     })
-  })
-  .catch(err => {
-    this.setState(() => ({ error: err }));
-  });
-  this.hideDeleteGroupModal();
-}
-
-getGroups =  () => {
-  api.getGroups(data => {
-    this.setState({
-      groups: this.state.groups.concat(data)
+    .catch(err => {
+      this.setState(() => ({ error: err }));
     });
-  })
-  .catch(err => {
-    this.setState(() => ({ error: err }));
-  });
-}
+  }
 
-updateGroup =  e => {
-  e.preventDefault();
-}
+  updateGroup =  e => {
+    e.preventDefault();
+  }
 
 render() {
     const titleMessage = this.state.groups.length === 0 ? 'Sorry, no Legendary Band..' : 'Legendary Bands..';
@@ -142,57 +135,23 @@ render() {
         </div>
 
         <div id="deleteConfirm" className="centered">
-          <Modal show={this.state.deleteConfirmDialog} >
-            <button className="modal-button-cross" onClick={this.hideDeleteGroupModal}></button>
+          <GroupDeleteModal show={this.state.deleteConfirmDialog} groupId={this.state.groupId}
+            handleClose={this.hideDeleteGroupModal} handleDelete={this.deleteGroup}  />
+        </div>
+
+        <div id="groupDetails">
+          <GroupDetailsModal show={this.state.groupDetailsDialog}
+            groupId={this.state.groupId} handleClose={this.hideGroupDetailsModal} />
+        </div>
+
+        <div id="groupPosts">
+          <GroupPostsModal show={this.state.groupPostsDialog}>
+            <button className="modal-button-cross" onClick={this.hideGroupPostsModal}></button>
             <div className="modal-content">
-              {deleteWarning}
-              </div>
-
-              <div className="control-buttons-container">
-                <div className="control-buttons">
-                  <button className="control-button" onClick={this.hideDeleteGroupModal}>Close</button>
-                  <button className="control-button" onClick={this.deleteGroup}>Delete</button>
-                </div>
-             </div>
-          </Modal>
-      </div>
-
-      <div id="groupDetails">
-        <GroupDetailsModal show={this.state.groupDetailsDialog} groupId={this.state.groupId}>
-          <button className="modal-button-cross" onClick={this.hideGroupDetailsModal}></button>
-          <div className="modal-content">
-              <form className="group-details-form">
-                <h3>Group Info</h3>
-                <p>
-                  <label htmlFor="groupName">Group Name</label>
-                  <input id="groupName" type="text" name="groupName"
-                    defaultValue={this.state.group === null ? "" : this.state.group.name}/>
-                </p>
-                <p>
-                  <label htmlFor="category">Category</label>
-                  <input id="category" type="text" name="category"
-                        defaultValue={this.state.group === null ? "" : this.state.group.category}/>
-                </p>
-                <p>
-                  <label htmlFor="description">Description</label>
-                  <textarea id="description" rows="10"
-                    value={this.state.group === null ? "" : this.state.group.description} readOnly={false} onChange={this.updateGroup}/>
-                </p>
-                <button>Cancel</button>
-                <button>Update</button>
-             </form>
-          </div>
-        </GroupDetailsModal>
-      </div>
-
-      <div id="groupPosts">
-        <GroupPostsModal show={this.state.groupPostsDialog}>
-          <button className="modal-button-cross" onClick={this.hideGroupPostsModal}></button>
-          <div className="modal-content">
-            <h1>Sorry, we under construction yet ..</h1>
-          </div>
-        </GroupPostsModal>
-      </div>
+              <h1>Sorry, we under construction yet ..</h1>
+            </div>
+          </GroupPostsModal>
+        </div>
 
     </div>
   );
