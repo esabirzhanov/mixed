@@ -28,11 +28,19 @@ module.exports = env => {
               }
             },
             {
-              test: /\.scss$/,
+              test: /(\.css|\.scss)$/,
               use: [
                 PLATFORM === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
                 'css-loader',
-                'sass-loader'
+                'sass-loader',
+                {
+                  loader: 'sass-resources-loader',
+                  options: {
+                    resources: [
+                      path.resolve(__dirname, '../src/styles/variables.scss')
+                    ]
+                  }
+                }
               ]
             },
             {

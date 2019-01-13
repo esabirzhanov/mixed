@@ -5,6 +5,7 @@ import Group from './Group';
 import GroupDetailsModal from "./GroupDetailsModal";
 import GroupDeleteModal from "./GroupDeleteModal";
 import GroupPostsModal from "./GroupPostsModal";
+import Loader from "../Loader";
 
 class Groups extends Component {
 
@@ -12,7 +13,7 @@ class Groups extends Component {
       super(props);
       this.state = {
           error: null,
-          loading: false,
+          loading: true,
           groups: [],
           deleteConfirmDialog: false,
           groupDetailsDialog: false,
@@ -86,12 +87,7 @@ class Groups extends Component {
 
   deleteGroup = groupId => {
     api.remove(this.state.groupId, () => {
-      console.log("fhgfhf");
-      api.getGroups(data => {
-        this.setState({
-          groups: data
-        });
-      })
+      this.getGroups()
     })
     .catch(err => {
       this.setState(() => ({ error: err }));
@@ -99,9 +95,10 @@ class Groups extends Component {
     this.hideDeleteGroupModal();
   }
 
-  getGroups =  () => {
+  getGroups = () => {
     api.getGroups(data => {
       this.setState({
+        loading: false,
         groups: this.state.groups.concat(data)
       });
     })
@@ -110,7 +107,7 @@ class Groups extends Component {
     });
   }
 
-  updateGroup =  e => {
+  updateGroup = e => {
     e.preventDefault();
   }
 
@@ -120,40 +117,48 @@ render() {
 
     return (
       <div>
-        <div className="groups clearfix">
-          <div className="title"></div>
-          <h2>{titleMessage}</h2>
-          <div>
-            {this.state.groups.map(({ id, name, category, picture, description }) => {
-              return <Group id={id} key={id} name={name}
-                category={category} picture={picture} description={description}
-                handleDelete={this.openDeleteGroupModal}
-                  handleDetails={this.openGroupDetailsModal}
-                  handlePosts={this.openGroupPostsModal} />;
-              })}
+        {this.state.loading ? (
+          <div className="loading">
+            <Loader/>
           </div>
-        </div>
-
-        <div id="deleteConfirm" className="centered">
-          <GroupDeleteModal show={this.state.deleteConfirmDialog} groupId={this.state.groupId}
-            handleClose={this.hideDeleteGroupModal} handleDelete={this.deleteGroup}  />
-        </div>
-
-        <div id="groupDetails">
-          <GroupDetailsModal show={this.state.groupDetailsDialog}
-            groupId={this.state.groupId} handleClose={this.hideGroupDetailsModal} />
-        </div>
-
-        <div id="groupPosts">
-          <GroupPostsModal show={this.state.groupPostsDialog}>
-            <button className="modal-button-cross" onClick={this.hideGroupPostsModal}></button>
-            <div className="modal-content">
-              <h1>Sorry, we under construction yet ..</h1>
+        ) : (
+          <div>
+            <div className="groups clearfix">
+              <div className="title"></div>
+              <h2>{titleMessage}</h2>
+              <div>
+                {this.state.groups.map(({ id, name, category, picture, description }) => {
+                  return <Group id={id} key={id} name={name}
+                    category={category} picture={picture} description={description}
+                    handleDelete={this.openDeleteGroupModal}
+                      handleDetails={this.openGroupDetailsModal}
+                      handlePosts={this.openGroupPostsModal} />;
+                  })}
+              </div>
             </div>
-          </GroupPostsModal>
-        </div>
 
-    </div>
+            <div id="deleteConfirm" className="centered">
+              <GroupDeleteModal show={this.state.deleteConfirmDialog} groupId={this.state.groupId}
+                handleClose={this.hideDeleteGroupModal} handleDelete={this.deleteGroup}  />
+            </div>
+
+            <div id="groupDetails">
+              <GroupDetailsModal show={this.state.groupDetailsDialog}
+                groupId={this.state.groupId} handleClose={this.hideGroupDetailsModal} />
+            </div>
+
+            <div id="groupPosts">
+              <GroupPostsModal show={this.state.groupPostsDialog}>
+                <button className="modal-button-cross" onClick={this.hideGroupPostsModal}></button>
+                <div className="modal-content">
+                  <h1>Sorry, we under construction yet ..</h1>
+                </div>
+              </GroupPostsModal>
+            </div>
+
+          </div>
+        )}
+      </div>
   );
   }
 }
