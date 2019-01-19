@@ -2,8 +2,9 @@ package enterprise
 
 import cats.effect._
 import cats.implicits._
+import doobie.util.transactor.Transactor
 import enterprise.model.{Artist, ArtistGroup}
-import enterprise.repositories.ArtistGroupRepository
+import enterprise.repositories.{ArtistGroupRepository, FlowRepository}
 import fs2._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -252,24 +253,31 @@ object WebSocketServer extends IOApp {
         Roll Hall of Fame.""".stripMargin('#'))
   )
 
-  override def run(args: List[String]): IO[ExitCode] =
-    new Initializer[IO].config(bands).compile.drain.as(ExitCode.Success)
+  override def run(args: List[String]): IO[ExitCode] = {
+    val xa = Transactor.fromDriverManager[IO](
+      "org.postgresql.Driver", "jdbc:postgresql:mixed", "esabirzh", ""
+    )
+    new Initializer[IO].config(bands, xa).compile.drain.as(ExitCode.Success)
+  }
+
 
 }
 
 class Initializer[F[_]](implicit F: ConcurrentEffect[F], timer: Timer[F]) extends Http4sDsl[F] {
 
 
-  def config(groups: List[ArtistGroup])(implicit ec: ExecutionContext) = {
+  def config(groups: List[ArtistGroup], xa: Transactor.Aux[F, Unit])(implicit ec: ExecutionContext) = {
     val ipAddress = "localhost"
   //  val ipAddress = "10.83.179.14"
 
     Stream.eval(ArtistGroupRepository.initialise[F](groups.to[ListBuffer])).flatMap { gRep =>
-      BlazeServerBuilder[F]
-        .bindHttp(8080, ipAddress)
-        .withWebSockets(true)
-        .withHttpApp(new WebSocketRoutes[F](gRep).routes.orNotFound)
-        .serve
+      Stream.eval(FlowRepository.initialise[F](xa)).flatMap { fRep =>
+        BlazeServerBuilder[F]
+          .bindHttp(8080, ipAddress)
+          .withWebSockets(true)
+          .withHttpApp(new WebSocketRoutes[F](gRep, fRep).routes.orNotFound)
+          .serve
+      }
     }
   }
 
