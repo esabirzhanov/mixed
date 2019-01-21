@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import '../../styles/components/menu.scss';
 import Groups from '../group/Groups';
 import Welcome from '../welcome/Welcome';
-import Flows from '../flows/Flows';
+import Flows from '../flow/Flows';
 import Restaurants from '../restaurants/Restaurants';
 import About from '../about/About';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
@@ -37,24 +37,29 @@ class Menu extends Component {
   }
 
   render() {
-
     return (
       <Router>
         <div>
           <div className="header">
-            <nav className={classNames('menu', {isOpen: this.state.showHideClassName})} id="main-menu">
-              <button className="menu-toggle" id="toggle-menu" onClick={this.toggleMenu}>
-                toggle menu
-              </button>
-              <div className='menu-dropdown'>
-                <ul className="site-nav">
-                  <li><Link to="/">Home</Link></li>
-                  <li><Link to="/bands">Bands</Link></li>
-                  <li><Link to="/flows">Flows</Link></li>
-                  <li><Link to="/restaurants">Restaurants</Link></li>
-                  <li><Link to="/about">About</Link></li>
-                </ul>
+            <nav className={classNames('menu', 'nav-container', {isOpen: this.state.showHideClassName})} id="main-menu">
+              <div className="nav-container__inner">
+                <div>
+                <button className="menu-toggle" id="toggle-menu" onClick={this.toggleMenu}>
+                  toggle menu
+                </button>
+                <div className='menu-dropdown'>
+                  <ul className="top-nav">
+                    <li><Link to="/">Home</Link></li>
+                    <li><Link to="/bands">Bands</Link></li>
+                    <li><Link to="/flows">Flows</Link></li>
+                    <li><Link to="/restaurants">Restaurants</Link></li>
+                    <li><Link to="/about">About</Link></li>
+                  </ul>
+                </div>
+                </div>
+ 
               </div>
+
             </nav>
           </div>
           <Route exact path="/" component={Welcome} />
@@ -63,7 +68,6 @@ class Menu extends Component {
           <Route path="/restaurants" component={Restaurants} />
           <Route path="/about" component={About} />
         </div>
-
       </Router>
     );
   }

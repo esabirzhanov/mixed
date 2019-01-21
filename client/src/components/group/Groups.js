@@ -123,19 +123,27 @@ render() {
           </div>
         ) : (
           <div>
-            <div className="groups clearfix">
-              <div className="title"></div>
-              <h2>{titleMessage}</h2>
-              <div>
-                {this.state.groups.map(({ id, name, category, picture, description }) => {
-                  return <Group id={id} key={id} name={name}
-                    category={category} picture={picture} description={description}
-                    handleDelete={this.openDeleteGroupModal}
-                      handleDetails={this.openGroupDetailsModal}
-                      handlePosts={this.openGroupPostsModal} />;
-                  })}
+
+            <div className="container">
+              <div className="tile">
+
+                <div className="groups clearfix">
+                  <div className="title"></div>
+                    <h2>{titleMessage}</h2>
+                  <div>
+                    {this.state.groups.map(({ id, name, category, picture, description }) => {
+                      return <Group id={id} key={id} name={name}
+                        category={category} picture={picture} description={description}
+                        handleDelete={this.openDeleteGroupModal}
+                          handleDetails={this.openGroupDetailsModal}
+                          handlePosts={this.openGroupPostsModal} />;
+                      })}
+                  </div>
+                </div>
+                
               </div>
             </div>
+
 
             <div id="deleteConfirm" className="centered">
               <GroupDeleteModal show={this.state.deleteConfirmDialog} groupId={this.state.groupId}
@@ -160,7 +168,7 @@ render() {
         )}
       </div>
   );
-  }
+}
 }
 
 export default Groups;
