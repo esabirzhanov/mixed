@@ -35,6 +35,18 @@ const update = (data, cb) => {
   .then(cb);
 }
 
+const update2 = (data, cb) => {
+  return fetch(`${endpoint}/groups`, {
+    method: 'PUT',
+    body: JSON.stringify(data), // data can be `string` or {object}!
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(checkStatus)
+  .then(cb);
+}
+
 const checkStatus = response => {
   if (response.status >= 200 && response.status < 300) {
     return response;
@@ -50,5 +62,5 @@ const parseJSON = response =>  {
   return response.json();
 }
 
-const api = { getGroups, getGroup, remove, update  };
+const api = { getGroups, getGroup, remove, update, update2  };
 export default api;

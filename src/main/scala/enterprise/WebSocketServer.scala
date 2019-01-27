@@ -26,29 +26,7 @@ object WebSocketServer extends IOApp {
         Artist("Nick", "Mason"),
         Artist("Syd", "Barret")),
         "pink_floyd.jpg",
-        """Pink Floyd were an English rock band formed in London in 1965. They achieved international acclaim with their progressive and
-            psychedelic music. Distinguished by their philosophical lyrics, sonic experimentation, extended compositions, and elaborate live
-            shows, they are one of the most commercially successful and influential groups in popular music history.
-            #
-            #Pink Floyd were founded by students Syd Barrett on guitar and lead vocals, Nick Mason on drums, Roger Waters on bass and vocals,
-            and Richard Wright on keyboards and vocals. They gained popularity performing in London's underground music scene during
-            the late 1960s, and under Barrett's leadership released two charting singles and a successful debut album,
-            The Piper at the Gates of Dawn (1967). Guitarist and vocalist David Gilmour joined in December 1967; Barrett
-            left in April 1968 due to deteriorating mental health. Waters became the band's primary lyricist and conceptual leader,
-            devising the concepts behind their albums The Dark Side of the Moon (1973), Wish You Were Here (1975), Animals (1977),
-            The Wall (1979) and The Final Cut (1983). The Dark Side of the Moon and The Wall became two of the best-selling albums of all time.
-            #
-            #Following creative tensions, Wright left Pink Floyd in 1979, followed by Waters in 1985. Gilmour and Mason continued as
-            Pink Floyd; Wright rejoined them as a session musician and, later, band member. The three produced two more
-            albums—A Momentary Lapse of Reason (1987) and The Division Bell (1994)—and toured through 1994.
-            After nearly two decades of enmity, Gilmour, Wright, and Mason reunited with Waters in 2005 to perform as Pink Floyd in London
-            as part of the global awareness event Live 8; Gilmour and Waters stated they had no further plans to reunite the band.
-            Barrett died in 2006, and Wright in 2008. The last Pink Floyd studio album, The Endless River (2014), was recorded without Waters
-            and based almost entirely on unreleased material.
-            #
-            #Pink Floyd were inducted into the American Rock and Roll Hall of Fame in 1996 and the UK Music Hall of Fame in 2005.
-            By 2013, they had sold more than 250 million records worldwide.
-        """.stripMargin('#')),
+        """Pink Floyd were an English rock band formed in London in 1965. They achieved international acclaim with their progressive and psychedelic music. Distinguished by their philosophical lyrics, sonic experimentation, extended compositions, and elaborate live shows, they are one of the most commercially successful and influential groups in popular music history.Pink Floyd were founded by students Syd Barrett on guitar and lead vocals, Nick Mason on drums, Roger Waters on bass and vocals, and Richard Wright on keyboards and vocals. They gained popularity performing in London's underground music scene during the late 1960s, and under Barrett's leadership released two charting singles and a successful debut album, The Piper at the Gates of Dawn (1967). Guitarist and vocalist David Gilmour joined in December 1967; Barrett left in April 1968 due to deteriorating mental health. Waters became the band's primary lyricist and conceptual leader, devising the concepts behind their albums The Dark Side of the Moon (1973), Wish You Were Here (1975), Animals (1977), The Wall (1979) and The Final Cut (1983). The Dark Side of the Moon and The Wall became two of the best-selling albums of all time. Following creative tensions, Wright left Pink Floyd in 1979, followed by Waters in 1985. Gilmour and Mason continued as Pink Floyd; Wright rejoined them as a session musician and, later, band member. The three produced two more albums—A Momentary Lapse of Reason (1987) and The Division Bell (1994)—and toured through 1994. After nearly two decades of enmity, Gilmour, Wright, and Mason reunited with Waters in 2005 to perform as Pink Floyd in London as part of the global awareness event Live 8; Gilmour and Waters stated they had no further plans to reunite the band. Barrett died in 2006, and Wright in 2008. The last Pink Floyd studio album, The Endless River (2014), was recorded without Waters and based almost entirely on unreleased material. Pink Floyd were inducted into the American Rock and Roll Hall of Fame in 1996 and the UK Music Hall of Fame in 2005. By 2013, they had sold more than 250 million records worldwide"""),
     ArtistGroup("2", "The Beatles", "Rock", true,
       List(
         Artist("John", "Lennon"),
@@ -57,34 +35,7 @@ object WebSocketServer extends IOApp {
         Artist("Ringo", "Starr")
       ),
         "beatles.jpg",
-        """The Beatles were an English rock band formed in Liverpool in 1960. With members John Lennon, Paul McCartney, George Harrison
-            and Ringo Starr, they became widely regarded as the foremost and most influential music band in history.[1] In 1963, their
-            enormous popularity first emerged as "Beatlemania"; as the group's music grew in sophistication, led by primary songwriters
-            Lennon and McCartney, the band became integral to pop music's evolution into an art form and to the development
-            of the counterculture of the 1960s.[2] Rooted in skiffle, beat and 1950s rock and roll, the Beatles later experimented with
-            several musical styles, ranging from pop ballads and Indian music to psychedelia and hard rock, often incorporating classical
-            elements and unconventional recording techniques in innovative ways.
-            #
-            #The Beatles built their reputation playing clubs in Liverpool and Hamburg over a three-year period from 1960, with Stuart
-            Sutcliffe initially serving as bass player. The core trio of Lennon, McCartney and Harrison, together since 1958, went through
-            a succession of drummers, including Pete Best, before asking Starr to join them in 1962. Manager Brian Epstein moulded them
-            into a professional act, and producer George Martin guided and developed their recordings, greatly expanding the group's
-            popularity in the United Kingdom after their first hit, "Love Me Do", in late 1962. They acquired the nickname "the Fab Four"
-            as Beatlemania grew in Britain over the next year, and by early 1964 became international stars, leading the "British Invasion"
-            of the United States pop market. From 1965 onwards, the Beatles produced increasingly innovative recordings, including
-            the albums Rubber Soul (1965), Revolver (1966), Sgt. Pepper's Lonely Hearts Club Band (1967), The Beatles (also known as the
-            "White Album", 1968) and Abbey Road (1969). After their break-up in 1970, they each enjoyed success as solo artists.
-            Lennon was shot and killed in December 1980, and Harrison died of lung cancer in November 2001. McCartney and Starr remain
-            musically active.
-            #
-            #The Beatles are the best-selling band in history, with estimated sales of over 800 million records worldwide.
-            They are the best-selling music artists in the United States, with 178 million certified units. The group was inducted into
-            the Rock and Roll Hall of Fame in 1988, and all four main members were inducted individually from 1994 to 2015.
-            They have also had more number-one albums on the British charts and sold more singles in the UK than any other act.
-            In 2008, the group topped Billboard magazine's list of the all-time most successful artists; as of 2017, they hold the record
-            for most number-one hits on the Hot 100 chart with twenty. They have received seven Grammy Awards, an Academy Award for
-            Best Original Song Score and fifteen Ivor Novello Awards. They were also collectively included in Time magazine's compilation
-            of the twentieth century's 100 most influential people.""".stripMargin('#')),
+        """The Beatles were an English rock band formed in Liverpool in 1960. With members John Lennon, Paul McCartney, George Harrison and Ringo Starr, they became widely regarded as the foremost and most influential music band in history.[1] In 1963, their enormous popularity first emerged as "Beatlemania"; as the group's music grew in sophistication, led by primary songwriters Lennon and McCartney, the band became integral to pop music's evolution into an art form and to the development of the counterculture of the 1960s.[2] Rooted in skiffle, beat and 1950s rock and roll, the Beatles later experimented with several musical styles, ranging from pop ballads and Indian music to psychedelia and hard rock, often incorporating classical elements and unconventional recording techniques in innovative ways. #The Beatles built their reputation playing clubs in Liverpool and Hamburg over a three-year period from 1960, with Stuart Sutcliffe initially serving as bass player. The core trio of Lennon, McCartney and Harrison, together since 1958, went through a succession of drummers, including Pete Best, before asking Starr to join them in 1962. Manager Brian Epstein moulded them into a professional act, and producer George Martin guided and developed their recordings, greatly expanding the group's popularity in the United Kingdom after their first hit, "Love Me Do", in late 1962. They acquired the nickname "the Fab Four" as Beatlemania grew in Britain over the next year, and by early 1964 became international stars, leading the "British Invasion" of the United States pop market. From 1965 onwards, the Beatles produced increasingly innovative recordings, including the albums Rubber Soul (1965), Revolver (1966), Sgt. Pepper's Lonely Hearts Club Band (1967), The Beatles (also known as the "White Album", 1968) and Abbey Road (1969). After their break-up in 1970, they each enjoyed success as solo artists. Lennon was shot and killed in December 1980, and Harrison died of lung cancer in November 2001. McCartney and Starr remain musically active. The Beatles are the best-selling band in history, with estimated sales of over 800 million records worldwide. They are the best-selling music artists in the United States, with 178 million certified units. The group was inducted into the Rock and Roll Hall of Fame in 1988, and all four main members were inducted individually from 1994 to 2015. They have also had more number-one albums on the British charts and sold more singles in the UK than any other act. In 2008, the group topped Billboard magazine's list of the all-time most successful artists; as of 2017, they hold the record for most number-one hits on the Hot 100 chart with twenty. They have received seven Grammy Awards, an Academy Award for Best Original Song Score and fifteen Ivor Novello Awards. They were also collectively included in Time magazine's compilation of the twentieth century's 100 most influential people.""".stripMargin('#')),
     ArtistGroup("3", "King Crimson", "Progressive Rock", true,
       List(
         Artist("Robert", "Fripp"),

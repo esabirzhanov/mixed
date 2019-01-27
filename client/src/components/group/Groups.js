@@ -69,6 +69,7 @@ class Groups extends Component {
       groupId: -1,
       groupDetailsDialog: false
     });
+    getGroups();
   }
 
   openDeleteGroupModal = (groupId, groupName) => {

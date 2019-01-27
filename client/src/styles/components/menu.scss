@@ -1,14 +1,3 @@
-.nav-container {
-  background-color: var(--medium-brown);
-}
-.nav-container__inner {
-  display: flex;
-  justify-content: space-between;
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 0.625em 0;
-}
-
 .header {
   top: 0.01em;
   position: sticky;
@@ -16,6 +5,10 @@
 
 .menu {
   position: relative;
+}
+
+.menu-container {
+  margin: 0;
 }
 
 .menu-toggle {
@@ -54,23 +47,13 @@
   display: block;
 }
 
-@media (min-width: 55em) {
-      .menu-toggle {
-        display: none;
-      }
-      .menu-dropdown {
-        display: block;
-        position: static;
-      }
-    }
-
 .top-nav {
   margin: 0;
   padding-left: 0;
   border: 1px solid #ccc;
   list-style: none;
-
   color: #fff;
+  background-color: var(--brand-brown);
 }
 
 .top-nav > li {
@@ -81,7 +64,6 @@
   border-top: 1px solid #ccc;
 }
 
-
 .top-nav > li > a {
   display: block;
   padding: 0.8em 1em;
@@ -89,22 +71,74 @@
   font-weight: normal;
 }
 
-
+@media (min-width: 55em) {
+  .menu-toggle {
+    display: none;
+  }
+  .menu-dropdown {
+    display: block;
+    position: static;
+  }
+}
 
 @media (min-width: 35em) {
-     .top-nav {
-       display: flex;
-       border: 0;
-       padding: 0 1em;
+
+
+  a {
+    color: var(--medium-brown);
+  }
+  a:visited {
+    color: var(--brand-brown);
+  }
+  a:hover {
+    color: var(--brand-brown);
+  }
+
+  
+  
+    .nav-container {
+      background-color: var(--medium-brown);
+    }
+    
+    .nav-container__inner {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0.625em 0;
+    }
+
+    .home-link {
+      color: var(--text-color);
+      font-size: 1.6rem;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+    .top-nav {
+      display: flex;
+      list-style-type: none;
+      margin: 0;
+      border: 0;
+      background-color: var(--medium-brown);
      }
+
      .top-nav > li {
        flex: 1;
      }
+
      .top-nav > li + li {
-       border: 0;
+       margin-left: 0.625em;
      }
+
      .top-nav > li > a {
-       padding: 0.5em;
-       text-align: center;
+      display: block;
+      padding: 0.3em 1.25em;
+      color: var(--white);
+      background: var(--brand-brown);
+      text-decoration: none;
+      border-radius: 3px;
+      font-size: 1.0em;
      }
    }

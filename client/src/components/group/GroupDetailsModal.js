@@ -11,6 +11,29 @@ class GroupDetailsModal extends Component {
       group: null
     };
     this.hideModal = this.hideModal.bind(this);
+    this.updateGroup = this.updateGroup.bind(this);
+    this.handleSubmitGroup = this.handleSubmitGroup.bind(this);
+  }
+
+  updateGroup = (e) =>  {
+    e.preventDefault();
+
+    const { id, name, category, outstanding, musicians} = this.state.group
+
+    const groupCopy = Object.assign({id: id, name: name, category: category, outstanding: outstanding, musicians: musicians, description: e.target.value}, object1);
+
+    console.log(groupCopy)
+    this.setState({
+      group: groupCopy,
+    });
+  }
+
+  handleSubmitGroup = (e) => {
+    e.preventDefault();
+
+    api.update2(this.state.group, () => {
+      this.hideModal(e);
+    });
   }
 
   hideModal(e){
@@ -33,6 +56,7 @@ class GroupDetailsModal extends Component {
 
   render() {
     const showHideClassName = this.props.show ? "modal display-block" : "modal display-none";
+
     return (
       <div className={showHideClassName}>
         <div className="modal-backdrop"></div>
@@ -54,10 +78,12 @@ class GroupDetailsModal extends Component {
               <p>
                 <label htmlFor="description">Description</label>
                 <textarea id="description" rows="10"
-                  defaultValue={this.state.group === null ? "" : this.state.group.description} readOnly={false} onChange={this.updateGroup}/>
+                  value={this.state.group == null ? "" : this.state.group.description} readOnly={false} onChange={this.updateGroup}/>
               </p>
-              <button>Cancel</button>
-              <button>Update</button>
+              <button>Cancel</button>  
+              <button  onClick={this.handleSubmitGroup}>Update</button>  
+
+           
             </form>
           </div>
         </div>
