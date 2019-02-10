@@ -15,7 +15,12 @@ module.exports = env => {
         entry: ['@babel/polyfill', APP_DIR], // <===== new stuff added here
         devServer: {
           proxy: {
-            '/api': 'http://localhost:8080'
+            '/api': 'http://localhost:8080',
+            '/streamed/flows': {
+              target: 'ws://localhost:8080',
+              ws: true
+            }
+         
           }
         },
         module: {

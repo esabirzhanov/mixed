@@ -17,14 +17,11 @@ class GroupDetailsModal extends Component {
 
   updateGroup = (e) =>  {
     e.preventDefault();
-
-    const { id, name, category, outstanding, musicians} = this.state.group
-
-    const groupCopy = Object.assign({id: id, name: name, category: category, outstanding: outstanding, musicians: musicians, description: e.target.value}, object1);
-
-    console.log(groupCopy)
+    const descrp = e.target.value
     this.setState({
-      group: groupCopy,
+      group: {
+        description: descrp
+      }
     });
   }
 

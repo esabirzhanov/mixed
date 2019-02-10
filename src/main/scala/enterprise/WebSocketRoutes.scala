@@ -1,12 +1,13 @@
 package enterprise
 
 
-import java.nio.ByteBuffer
+import java.nio.{ByteBuffer, ByteOrder}
+import java.time.{ZoneId, ZonedDateTime}
+import java.time.format.DateTimeFormatter
 
 import cats.data.NonEmptyList
 import cats.implicits._
 import cats.effect._
-import io.circe._
 import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -17,13 +18,13 @@ import enterprise.validators.ArtistGroupFormValidator._
 import fs2.text.utf8Decode
 import fs2.concurrent.Queue
 import fs2._
-import org.http4s.{DecodeFailure, DecodeResult, Entity, EntityDecoder, EntityEncoder, Header, HeaderKey, HttpRoutes, MediaType, Message, Response, Status, TransferCoding}
+import org.http4s.{EntityEncoder, HttpRoutes, Response, Status}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.websocket.WebSocketBuilder
 import org.http4s.websocket.WebsocketBits._
 import org.http4s.circe._
 import org.http4s.multipart.{Multipart, Part}
-import org.http4s.websocket.FrameTranscoder
+import org.http4s.websocket.{FrameTranscoder, WebsocketBits}
 
 import scala.concurrent.duration._
 import fs2.Stream
@@ -37,6 +38,7 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
 
   val GROUPS = "groups"
   val API = "api"
+  val STREAMED = "streamed"
   val FLOWS = "flows"
   val FLOWS_STREAMED = "flows-streamed"
   val FLOWS_STREAMED_V2 = "flows-streamed-v2"
@@ -58,6 +60,23 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
     val protocol: Array[Byte] = ByteBuffer.allocate(4).putInt(f.protocol ).array()
     Chunk.bytes( flowId ++ flowStartActive ++ flowLastActive ++ servicePort ++ protocol )
   }
+
+  final val g: Flow => WebSocketFrame = (f: Flow) => {
+    val bb = ByteBuffer.allocate(32).order(ByteOrder.LITTLE_ENDIAN)
+    bb.putLong(f.id)
+    bb.putLong(f.startActive.toEpochMilli)
+    bb.putLong(f.lastActive.toEpochMilli)
+    bb.putInt(f.servicePort)
+    bb.putInt(f.protocol)
+
+    val preamble: Array[Byte] = Array(0x82, 0x7E, 0x00, bb.array.length).map(_.toByte)
+    val ba = ByteBuffer.allocate(preamble.length + bb.array.length)
+    ba.put(preamble)
+    ba.put(bb.array)
+    decode( ba.array )
+  }
+
+
 
   implicit val w1: EntityEncoder[F, Flow] = EntityEncoder.simple[F, Flow]()( h )
 
@@ -81,7 +100,20 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
       val toClient: Stream[F, WebSocketFrame] = {
         val data = Array(0x82, 0x7E, 0x00, 0x03, 0x7B, 0x03, 0x04).map(_.toByte)
         val frame: WebSocketFrame = decode(data)
-        Stream.awakeEvery[F](1.seconds).map(d => frame )
+        Stream.awakeEvery[F](10.seconds).map(d => frame )
+      }
+
+      val fromClient: Sink[F, WebSocketFrame] = _.evalMap {
+        case Text(t, _) => F.delay(println(t))
+        case f => F.delay(println(s"Unknown type: $f"))
+      }
+
+      WebSocketBuilder[F].build(toClient, fromClient)
+    }
+
+    case GET -> Root / STREAMED / FLOWS => {
+      val toClient: Stream[F, WebSocketFrame] = {
+        afRepo.getFlowsStreamed(10).map[WebSocketFrame](g)
       }
 
       val fromClient: Sink[F, WebSocketFrame] = _.evalMap {
@@ -224,6 +256,8 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
 
     }
 
+
+
   }
 
   // This is a mock data source, but could be a Process representing results from a database
@@ -248,7 +282,7 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
     stream
   }
 
-  def decode(msg: Array[Byte]): WebSocketFrame =
+  private def decode(msg: Array[Byte]): WebSocketFrame =
     new FrameTranscoder(false).bufferToFrame(ByteBuffer.wrap(msg))
 
 
