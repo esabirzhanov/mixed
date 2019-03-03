@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import '../../styles/components/flows.scss';
 import FlowRow from './FlowRow';
-
-
+import moment from 'moment';
 
 
 const flowsApi = [
@@ -19,7 +18,6 @@ class Flows extends Component {
         };
         this.onChange = this.onChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.buffer = [];
     }
 
     handleSubmit = ev => {
@@ -33,9 +31,6 @@ class Flows extends Component {
     }
 
     componentDidMount() {
-        this.setState({
-            flows: this.state.flows.concat(flowsApi)
-        });
 
         const _2pow32 = Math.pow(2, 32);
 
@@ -44,14 +39,23 @@ class Flows extends Component {
         ws.binaryType = "arraybuffer"; 1
         ws.onopen = () => console.log(`Connected to ${WS_URL}`);
 
+        let flowBuffer = [];
+
         ws.onmessage = message => {
             const data = message.data;
             const typeArray32 = new Uint32Array(data);
+           
 
+            const id = consumeLong(typeArray32, 0, _2pow32); 
+      
+
+
+            /*
             const idL = typeArray32[1];
             const idS = typeArray32[0]; 
             const idLShifted = idL * _2pow32;
             const idRes = idLShifted + idS;
+            */
          
             const saTsL = typeArray32[3];
             const saTsS = typeArray32[2]; 
@@ -64,38 +68,51 @@ class Flows extends Component {
             const laTsShifted = laTsL * _2pow32;
             const laTsRes = laTsShifted + laTsS;
             const laTs = new Date(laTsRes);
-      
-            const sp = typeArray32[6]; 
-            const protocol = typeArray32[7]; 
+
+            const clientIp = typeArray32[6]
+
+           
+
+            const sp = typeArray32[7]; 
+            const protocol = typeArray32[8]; 
+
+            const hgsLength = typeArray32[9]; 
+            
+
+            const usrNameLength = new Uint8Array(data, 40, 1)[0];
+            let usrName
+            if (usrNameLength === 0) 
+                usrName = ''
+            else 
+                usrName = new TextDecoder("utf-8").decode(new Uint8Array(data, 41, usrNameLength));
+            
+            
+
+    
+
+            console.log("asjdhgajdg " + hgsLength)
+    
 
             const flow = {
-                id: idRes,
-                startTime:  saTs, 
-                lastTime: laTs,
+                id: id,
+                startTime:  moment(saTs).format(), 
+                lastTime:   moment(laTs).format(),
                 port:   sp,
-                protocol:   protocol
+                protocol:   protocol,
+                userName: usrName
             }
+            flowBuffer = flowBuffer.concat([flow])
 
-            console.log('Flow!!!');
-            console.log(flow.id);
-       
-            console.log(flow.startTime);
-            console.log(flow.lastTime);
-            console.log(flow.port);
-            console.log(flow.protocol);
-
-            this.buffer = this.buffer.concat([flow])
-
-    /*
-       
-            */
+            if (flowBuffer.length === 86) {
+                ws.close();
+            }
         };
+        
         ws.onclose = message => {
-            console.log("Done!!!" + message.target)
-            console.log(this.buffer)
-
-          
-
+            console.log("Done.. we are closed..  now updating React state!!!")
+            this.setState({
+                flows: this.state.flows.concat(flowBuffer)
+             });
         };
     }
 
@@ -112,6 +129,7 @@ class Flows extends Component {
                         <tr>
                             <th>Start Time</th>
                             <th>Last Time</th>
+                            <th>User Name</th>
                             <th>Service Port</th>
                             <th>Protocol</th>
                         </tr>
@@ -128,6 +146,13 @@ class Flows extends Component {
             </div>
         );
     }
+}
+
+const consumeLong = (typeArray, index, _2pow32) => {
+    const l = typeArray[index + 1];
+    const s = typeArray[index]; 
+    const lShifted = l * _2pow32;
+    return lShifted + s;
 }
 
 export default Flows

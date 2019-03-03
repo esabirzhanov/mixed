@@ -2,14 +2,11 @@ import React from 'react';
 
 
 const FlowRow = ({row}) => {
-
-  console.log(row.id)
-
-
     return (
       <tr>
         <td>{row.startTime}</td>
         <td>{row.lastTime}</td>
+        <td>{row.userName}</td>
         <td>{row.port}</td>
         <td>{row.protocol}</td>
       </tr>

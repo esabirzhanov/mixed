@@ -29,8 +29,7 @@ import org.http4s.websocket.{FrameTranscoder, WebsocketBits}
 import scala.concurrent.duration._
 import fs2.Stream
 
-
-
+import scala.annotation.tailrec
 
 
 class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: FlowRepository[F])(implicit F: ConcurrentEffect[F], timer: Timer[F])
@@ -40,8 +39,10 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
   val API = "api"
   val STREAMED = "streamed"
   val FLOWS = "flows"
+  val FLOWS_EXP = "flows-experiment"
   val FLOWS_STREAMED = "flows-streamed"
   val FLOWS_STREAMED_V2 = "flows-streamed-v2"
+
 
   val ID_PRM = "id"
   val NAME_PRM = "name"
@@ -50,24 +51,78 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
   val PICTURE_PRM = "picture"
   val DESCRIPTION_PRM = "description"
 
+  val BYTES_NUMBER = 36
+
   // implicit val FlowEncoder: EntityEncoder[F, Flow] = EntityEncoder.encodeBy[F, Flow](`Transfer-Encoding` (TransferCoding.chunked) )(f => Entity.empty)
 
-  final val h: Flow => Chunk[Byte] = (f: Flow) => {
-    val flowId: Array[Byte] = ByteBuffer.allocate(8).putLong(f.id).array()
-    val flowStartActive: Array[Byte] = ByteBuffer.allocate(8).putLong(f.startActive.toEpochMilli ).array()
-    val flowLastActive: Array[Byte] = ByteBuffer.allocate(8).putLong(f.lastActive.toEpochMilli ).array()
-    val servicePort: Array[Byte] = ByteBuffer.allocate(4).putInt(f.servicePort ).array()
-    val protocol: Array[Byte] = ByteBuffer.allocate(4).putInt(f.protocol ).array()
-    Chunk.bytes( flowId ++ flowStartActive ++ flowLastActive ++ servicePort ++ protocol )
+  final val h: Flow => Chunk[Byte] = (flow: Flow) => {
+    val flowId: Array[Byte] = ByteBuffer.allocate(8).putLong(flow.id).array()
+    val flowStartActive: Array[Byte] = ByteBuffer.allocate(8).putLong(flow.startActive.toEpochMilli ).array()
+    val flowLastActive: Array[Byte] = ByteBuffer.allocate(8).putLong(flow.lastActive.toEpochMilli ).array()
+
+    val unBytes = flow.userName.fold[Array[Byte]](new Array[Byte](0))(name => (name + "\u0410" + "\u0414" + "\u0416" + "C").getBytes("UTF8"))
+    val userNameCount = ByteBuffer.allocate(1).put(unBytes.length.toByte).array()
+    val userName = ByteBuffer.allocate(unBytes.length).put(unBytes).array()
+
+
+    val clientIp: Array[Byte] = ByteBuffer.allocate(4).put(flow.clientIp.getAddress).array()
+
+    val clientHgsCount = ByteBuffer.allocate(4).putInt(flow.clientGroupList.size).array()
+    val clientHgs = convertHgs(flow.clientGroupList)
+
+    val clientBytes: Array[Byte] = ByteBuffer.allocate(8).putLong(flow.clientBytes).array()
+
+
+
+    val servicePort: Array[Byte] = ByteBuffer.allocate(4).putInt(flow.servicePort ).array()
+    val protocol: Array[Byte] = ByteBuffer.allocate(4).putInt(flow.protocol ).array()
+
+    Chunk.bytes( flowId ++ flowStartActive ++ flowLastActive ++ userNameCount ++ userName ++ clientIp ++ clientHgsCount ++ clientHgs ++ clientBytes ++ servicePort ++ protocol )
   }
 
-  final val g: Flow => WebSocketFrame = (f: Flow) => {
-    val bb = ByteBuffer.allocate(32).order(ByteOrder.LITTLE_ENDIAN)
-    bb.putLong(f.id)
-    bb.putLong(f.startActive.toEpochMilli)
-    bb.putLong(f.lastActive.toEpochMilli)
-    bb.putInt(f.servicePort)
-    bb.putInt(f.protocol)
+  def convertHgs(hgs: List[Int]): Array[Byte] = {
+
+    @tailrec
+    def goHgs(hgs: List[Int], res: Array[Byte]): Array[Byte] = {
+      hgs match {
+        case Nil => res
+        case x :: xs => goHgs(xs, res ++ ByteBuffer.allocate(4).putInt(x).array() )
+      }
+    }
+    goHgs(hgs, new Array[Byte](0))
+  }
+
+  final val g: Flow => WebSocketFrame = (flow: Flow) => {
+
+    val hgData: Array[Byte] = flow.clientGroupList.foldLeft(new Array[Byte](0)) ( (acc, entry) => {
+      val bb = ByteBuffer.allocate(4).order((ByteOrder.LITTLE_ENDIAN))
+      acc ++ bb.putInt(entry).array()
+    })
+
+
+    val usrData: Array[Byte] = flow.userName.fold(new Array[Byte](0))(name => name.getBytes)
+    val totalLength: Int = 4 + usrLength(usrData)
+
+
+    val bb = ByteBuffer.allocate(totalLength).order(ByteOrder.LITTLE_ENDIAN)
+    bb.putLong(flow.id)
+    bb.putLong(flow.startActive.toEpochMilli)
+    bb.putLong(flow.lastActive.toEpochMilli)
+
+    bb.put(flow.clientIp.getAddress)
+
+    bb.putInt(hgData.length)
+
+   // bb.put(hgData)
+
+    bb.putInt(flow.servicePort)
+    bb.putInt(flow.protocol)
+
+
+
+
+    bb.put(usrData.length.toByte)
+    bb.put(usrData)
 
     val preamble: Array[Byte] = Array(0x82, 0x7E, 0x00, bb.array.length).map(_.toByte)
     val ba = ByteBuffer.allocate(preamble.length + bb.array.length)
@@ -76,7 +131,24 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
     decode( ba.array )
   }
 
+  private def usrLength(usrData: Array[Byte]): Int = {
+    val multiple = (BYTES_NUMBER + usrData.length + 1) / 4
+    val length = (multiple + 1) * 4
+    length
+  }
 
+  private def hgsLength(hgs: List[Int]): Int = {
+    4 * hgs.size + 4
+  }
+
+  val f: Chunk[Byte] => WebSocketFrame = (chunk: Chunk[Byte]) => {
+    val payload = chunk.toArray
+    val preamble: Array[Byte] = Array(0x82, 0x7E, 0x00, payload.length).map(_.toByte)
+    val ba = ByteBuffer.allocate(preamble.length + payload.length)
+    ba.put(preamble)
+    ba.put(payload)
+    decode( ba.array )
+  }
 
   implicit val w1: EntityEncoder[F, Flow] = EntityEncoder.simple[F, Flow]()( h )
 
@@ -114,6 +186,36 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
     case GET -> Root / STREAMED / FLOWS => {
       val toClient: Stream[F, WebSocketFrame] = {
         afRepo.getFlowsStreamed(10).map[WebSocketFrame](g)
+      }
+
+      val fromClient: Sink[F, WebSocketFrame] = _.evalMap {
+        case Text(t, _) => F.delay(println(t))
+        case f => F.delay(println(s"Unknown type: $f"))
+      }
+
+      WebSocketBuilder[F].build(toClient, fromClient)
+    }
+
+    case GET -> Root / STREAMED / FLOWS_EXP => {
+      val toClient: Stream[F, WebSocketFrame] = {
+
+        val zId = ZoneId.of("UTC")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(zId)
+        val time: ZonedDateTime = ZonedDateTime.parse("2019-02-08 13:15:47", formatter)
+        val ts: Long = time.toInstant.toEpochMilli
+        val bb = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN)
+        bb.putLong(ts)
+        val pl = bb.array.length
+
+        val preamble: Array[Byte] = Array(0x82, 0x7E, 0x00, pl).map(_.toByte)
+        val ba = ByteBuffer.allocate(preamble.length + pl)
+        ba.put(preamble)
+        ba.put(bb.array)
+        val frame: WebSocketFrame = decode(ba.array)
+
+
+
+        Stream(frame)
       }
 
       val fromClient: Sink[F, WebSocketFrame] = _.evalMap {

@@ -8,9 +8,17 @@ import scala.concurrent.ExecutionContext
 import doobie._
 import doobie.implicits._
 import cats.implicits._
+import enterprise.model.Flow
+
+
+
 
 
 object DoobieExamples extends IOApp  {
+
+  import Flow.ipGet
+  import Flow.hgGet
+
 
   final case class CountryCode(code: Option[String])
 
@@ -30,11 +38,14 @@ object DoobieExamples extends IOApp  {
 
   // An example action. Streams results to stdout
   lazy val example: ConnectionIO[Unit] =
-    speakerQuery(10).evalMap(c => FC.delay(println("~> " + s"$c"))).compile.drain
+    query(10).evalMap(c => FC.delay(println("~> " + s"$c"))).compile.drain
 
 
   // Construct an action to find countries where more than `pct` of the population speaks `lang`.
   // The result is a fs2.Stream that can be further manipulated by the caller.
-  def speakerQuery(pct: Double) =  sql"SELECT service_port FROM flows WHERE flow_id > $pct".query[Int].stream
+  def speakerQuery(pct: Double) =  sql"SELECT service_port, client_ip_address FROM flows WHERE flow_id > $pct".query[(Int, String)].stream
+
+  def query(pct: Double) = sql"SELECT flow_id, start_active, last_active, username, client_ip_address, client_group_list, client_bytes, server_ip_address, server_group_list, server_bytes, service_port, protocol FROM flows WHERE flow_id > $pct".query[Flow].stream
+
 
 }

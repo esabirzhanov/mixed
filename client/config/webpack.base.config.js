@@ -19,8 +19,11 @@ module.exports = env => {
             '/streamed/flows': {
               target: 'ws://localhost:8080',
               ws: true
+            },
+            '/streamed/flows-experiment': {
+              target: 'ws://localhost:8080',
+              ws: true
             }
-         
           }
         },
         module: {
