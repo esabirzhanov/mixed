@@ -53,29 +53,57 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
 
   val BYTES_NUMBER = 36
 
+  /* fields lengths definition */
+  val FLOW_ID_LENGTH = 8
+  val START_ACTIVE_LENGTH = 8
+  val LAST_ACTIVE_LENGTH = 8
+  val CLIENT_BYTES_LENGTH = 8
+  val CLIENT_IP_LENGTH = 4
+  val SERVICE_PORT_LENGTH = 4
+  val PROTOCOL_LENGTH = 4
+
+  val WS_STATIC_FIELDS_LENGTH =
+    FLOW_ID_LENGTH +
+    START_ACTIVE_LENGTH +
+    LAST_ACTIVE_LENGTH +
+    CLIENT_BYTES_LENGTH +
+    CLIENT_IP_LENGTH +
+    SERVICE_PORT_LENGTH +
+    PROTOCOL_LENGTH
+
   // implicit val FlowEncoder: EntityEncoder[F, Flow] = EntityEncoder.encodeBy[F, Flow](`Transfer-Encoding` (TransferCoding.chunked) )(f => Entity.empty)
 
-  final val h: Flow => Chunk[Byte] = (flow: Flow) => {
-    val flowId: Array[Byte] = ByteBuffer.allocate(8).putLong(flow.id).array()
-    val flowStartActive: Array[Byte] = ByteBuffer.allocate(8).putLong(flow.startActive.toEpochMilli ).array()
-    val flowLastActive: Array[Byte] = ByteBuffer.allocate(8).putLong(flow.lastActive.toEpochMilli ).array()
+  /* flow to the fs2 chunk conversion stuff */
+  final val fs2Chunk: Flow => Chunk[Byte] = (flow: Flow) => {
+    /* flow id */
+    val flowId: Array[Byte] = ByteBuffer.allocate(FLOW_ID_LENGTH).putLong(flow.id).array()
 
+    /* start active */
+    val flowStartActive: Array[Byte] = ByteBuffer.allocate(START_ACTIVE_LENGTH).putLong(flow.startActive.toEpochMilli ).array()
+
+    /* last active */
+    val flowLastActive: Array[Byte] = ByteBuffer.allocate(LAST_ACTIVE_LENGTH).putLong(flow.lastActive.toEpochMilli ).array()
+
+    /* user name */
     val unBytes = flow.userName.fold[Array[Byte]](new Array[Byte](0))(name => (name + "\u0410" + "\u0414" + "\u0416" + "C").getBytes("UTF8"))
     val userNameCount = ByteBuffer.allocate(1).put(unBytes.length.toByte).array()
     val userName = ByteBuffer.allocate(unBytes.length).put(unBytes).array()
 
+    /* client ip */
+    val clientIp: Array[Byte] = ByteBuffer.allocate(CLIENT_IP_LENGTH).put(flow.clientIp.getAddress).array()
 
-    val clientIp: Array[Byte] = ByteBuffer.allocate(4).put(flow.clientIp.getAddress).array()
-
+    /* client host group ids */
     val clientHgsCount = ByteBuffer.allocate(4).putInt(flow.clientGroupList.size).array()
     val clientHgs = convertHgs(flow.clientGroupList)
 
-    val clientBytes: Array[Byte] = ByteBuffer.allocate(8).putLong(flow.clientBytes).array()
+    /* client bytes */
+    val clientBytes: Array[Byte] = ByteBuffer.allocate(CLIENT_BYTES_LENGTH).putLong(flow.clientBytes).array()
 
+    /* service port */
+    val servicePort: Array[Byte] = ByteBuffer.allocate(SERVICE_PORT_LENGTH).putInt(flow.servicePort ).array()
 
-
-    val servicePort: Array[Byte] = ByteBuffer.allocate(4).putInt(flow.servicePort ).array()
-    val protocol: Array[Byte] = ByteBuffer.allocate(4).putInt(flow.protocol ).array()
+    /* protocol */
+    val protocol: Array[Byte] = ByteBuffer.allocate(PROTOCOL_LENGTH).putInt(flow.protocol ).array()
 
     Chunk.bytes( flowId ++ flowStartActive ++ flowLastActive ++ userNameCount ++ userName ++ clientIp ++ clientHgsCount ++ clientHgs ++ clientBytes ++ servicePort ++ protocol )
   }
@@ -92,53 +120,64 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
     goHgs(hgs, new Array[Byte](0))
   }
 
-  final val g: Flow => WebSocketFrame = (flow: Flow) => {
+  /* flow to the web socket frame conversion stuff */
+  final val wsFrame: Flow => WebSocketFrame = (flow: Flow) => {
 
     val hgData: Array[Byte] = flow.clientGroupList.foldLeft(new Array[Byte](0)) ( (acc, entry) => {
       val bb = ByteBuffer.allocate(4).order((ByteOrder.LITTLE_ENDIAN))
       acc ++ bb.putInt(entry).array()
     })
 
+    val usrData = flow.userName.fold(new Array[Byte](0))(name => name.getBytes)
+    val payload = wsPayload(flow, hgData, usrData)
 
-    val usrData: Array[Byte] = flow.userName.fold(new Array[Byte](0))(name => name.getBytes)
-    val totalLength: Int = 4 + usrLength(usrData)
+    val preamble: Array[Byte] = Array(0x82, 0x7E, 0x00, payload.length).map(_.toByte)
+    val ba = ByteBuffer.allocate(preamble.length + payload.length)
 
+    val frame = ba
+      /* ws frame preamble */
+      .put(preamble)
+      /* ws frame payload  */
+      .put(payload)
+      .array()
 
-    val bb = ByteBuffer.allocate(totalLength).order(ByteOrder.LITTLE_ENDIAN)
+    decode( frame )
+  }
+
+  private def wsPayload(flow: Flow, hgData: Array[Byte], usrData: Array[Byte]): Array[Byte] = {
+    val totalLength: Int = WS_STATIC_FIELDS_LENGTH + (hgData.size + 4) + (usrData.length + 1)
+
+    val bb = ByteBuffer.allocate(adjustLength(totalLength)).order(ByteOrder.LITTLE_ENDIAN)
+
+      /* flow id */
     bb.putLong(flow.id)
-    bb.putLong(flow.startActive.toEpochMilli)
-    bb.putLong(flow.lastActive.toEpochMilli)
-
-    bb.put(flow.clientIp.getAddress)
-
-    bb.putInt(hgData.length)
-
-   // bb.put(hgData)
-
-    bb.putInt(flow.servicePort)
-    bb.putInt(flow.protocol)
-
-
-
-
-    bb.put(usrData.length.toByte)
-    bb.put(usrData)
-
-    val preamble: Array[Byte] = Array(0x82, 0x7E, 0x00, bb.array.length).map(_.toByte)
-    val ba = ByteBuffer.allocate(preamble.length + bb.array.length)
-    ba.put(preamble)
-    ba.put(bb.array)
-    decode( ba.array )
+      /* start active */
+      .putLong(flow.startActive.toEpochMilli)
+      /* last active */
+      .putLong(flow.lastActive.toEpochMilli)
+      /* client bytes */
+      .putLong(flow.clientBytes)
+      /* client ip as byte array */
+      .put(flow.clientIp.getAddress)
+      /* service port */
+      .putInt(flow.servicePort)
+      /* protocol */
+      .putInt(flow.protocol)
+      /* client hg list length.. as 4 bytes  */
+      .putInt(flow.clientGroupList.size)
+      /* client hg list itself as byte array */
+      .put(hgData)
+      /* user data length .. as 1 byte */
+      .put(usrData.length.toByte)
+      /* user data itself as byte array */
+      .put(usrData)
+      /* payload as a byte array */
+      .array()
   }
 
-  private def usrLength(usrData: Array[Byte]): Int = {
-    val multiple = (BYTES_NUMBER + usrData.length + 1) / 4
-    val length = (multiple + 1) * 4
-    length
-  }
-
-  private def hgsLength(hgs: List[Int]): Int = {
-    4 * hgs.size + 4
+  private def adjustLength(length: Int): Int = {
+    val multiple = length / 4
+    (multiple + 1) * 4
   }
 
   val f: Chunk[Byte] => WebSocketFrame = (chunk: Chunk[Byte]) => {
@@ -150,7 +189,7 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
     decode( ba.array )
   }
 
-  implicit val w1: EntityEncoder[F, Flow] = EntityEncoder.simple[F, Flow]()( h )
+  implicit val w1: EntityEncoder[F, Flow] = EntityEncoder.simple[F, Flow]()( fs2Chunk )
 
 
   def routes: HttpRoutes[F] = HttpRoutes.of[F] {
@@ -185,7 +224,7 @@ class WebSocketRoutes[F[_]: Sync] (agRepo: ArtistGroupRepository[F], afRepo: Flo
 
     case GET -> Root / STREAMED / FLOWS => {
       val toClient: Stream[F, WebSocketFrame] = {
-        afRepo.getFlowsStreamed(10).map[WebSocketFrame](g)
+        afRepo.getFlowsStreamed(10).map[WebSocketFrame](wsFrame)
       }
 
       val fromClient: Sink[F, WebSocketFrame] = _.evalMap {

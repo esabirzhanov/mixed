@@ -6,12 +6,11 @@ import doobie.util.transactor.Transactor
 
 import scala.concurrent.ExecutionContext
 import doobie._
-import doobie.implicits._
-import cats.implicits._
+
 import enterprise.model.Flow
 
-
-
+import doobie.implicits._
+import cats.implicits._
 
 
 object DoobieExamples extends IOApp  {
@@ -19,8 +18,6 @@ object DoobieExamples extends IOApp  {
   import Flow.ipGet
   import Flow.hgGet
 
-
-  final case class CountryCode(code: Option[String])
 
   // We need a ContextShift[IO] before we can construct a Transactor[IO]. The passed ExecutionContext
   // is where nonblocking operations will be executed.
